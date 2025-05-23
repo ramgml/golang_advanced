@@ -11,6 +11,7 @@ func main() {
 	numCh := make(chan int)
 	resultCh := make(chan int)
 	var wg sync.WaitGroup
+	var mu sync.Mutex
 	go getRandomNumbers(numCh)
 	go getSquare(numCh, resultCh)
 	var results []int
@@ -18,7 +19,9 @@ func main() {
 	go func() {
 		defer wg.Done()
 		for square := range resultCh {
+			mu.Lock()
 			results = append(results, square)
+			mu.Unlock()
 		}
 	}()
 	wg.Wait()
@@ -26,7 +29,7 @@ func main() {
 }
 
 func getRandomNumbers(numCh chan int) {
-	for range 10 {
+	for i := 0; i < 10; i++ {
 		numCh <- rand.Intn(101)
 	}
 	close(numCh)
