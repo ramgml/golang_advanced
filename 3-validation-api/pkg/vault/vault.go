@@ -2,6 +2,7 @@ package vault
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -59,27 +60,46 @@ func NewVault(db Db) *VaultWithDb {
 	}
 }
 
-func (vault *VaultWithDb) GetAccountByEmail(email string) *Account {
+func (vault *VaultWithDb) GetAccountByEmail(email string) (Account, error) {
 	for _, account := range vault.Accounts {
 		if account.Email == email {
-			return &account
+			return account, nil
 		}
 	}
-	return nil
+	err := errors.New("Account not found")
+	return Account{}, err
 }
 
-func (vault *VaultWithDb) GetAccountByKey(key string) *Account {
+func (vault *VaultWithDb) GetAccountByKey(key string) (Account, error) {
 	for _, account := range vault.Accounts {
 		if account.Key == key {
-			return &account
+			return account, nil
 		}
 	}
-	return nil
+	err := errors.New("Account not found")
+	return Account{}, err
 }
 
 func (vault *VaultWithDb) AddAccount(acc Account) {
 	vault.Accounts = append(vault.Accounts, acc)
 	vault.Save()
+}
+
+func (vault *VaultWithDb) DeleteAccount(email string) bool {
+	var accounts []Account
+	isDeleted := false
+	for _, acc := range vault.Accounts {
+		if acc.Email != email {
+			accounts = append(accounts, acc)
+		} else {
+			isDeleted = true
+		}
+	}
+	if isDeleted {
+		vault.Accounts = accounts
+		vault.Save()
+	}
+	return isDeleted
 }
 
 func (vault *Vault) ToBytes() ([]byte, error) {

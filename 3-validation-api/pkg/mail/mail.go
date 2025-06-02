@@ -14,7 +14,7 @@ func SendMail(address string, from string, password string, acc *vault.Account) 
 	e.From = fmt.Sprintf("Jordan Wright <%s>", from)
 	e.To = []string{acc.Email}
 	e.Subject = "Verify your email"
-	e.HTML = fmt.Appendf(nil, "<a href=\"%s\">Click me!</a>", link)
+	e.HTML = []byte(fmt.Sprintf("<a href=\"%s\">Click me!", link))
 	err := e.Send(address, smtp.PlainAuth("", from, password, "smtp.gmail.com"))
 	return err
 }

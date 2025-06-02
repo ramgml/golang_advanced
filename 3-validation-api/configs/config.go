@@ -11,6 +11,7 @@ type Config struct {
 	Email string
 	Password string
 	Address string
+	Urn string
 }
 
 func LoadConfig() *Config {
@@ -22,5 +23,6 @@ func LoadConfig() *Config {
 		Email: os.Getenv("EMAIL"),
 		Password: os.Getenv("PASSWORD"),
 		Address: os.Getenv("ADDRESS"),
+		Urn: "email.json",
 	}
 }

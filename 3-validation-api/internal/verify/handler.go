@@ -45,14 +45,14 @@ func (h *EmailHandler) SendEmail() func(http.ResponseWriter, *http.Request) {
 			response.Json(w, err.Error(), 402)
 			return
 		}
-		fileDb := vault.NewVault(files.NewJsonDb("../emails.json"))	
-		account := fileDb.GetAccountByEmail(requestBody.Email)
-		if account == nil {
+		fileDb := vault.NewVault(files.NewJsonDb(h.Config.Urn))	
+		account, err := fileDb.GetAccountByEmail(requestBody.Email)
+		if err != nil {
 			key := keygen.GetUserKey(requestBody.Email)
-			account := vault.NewAccount(requestBody.Email, key)
-			fileDb.AddAccount(*account)
+			account = *vault.NewAccount(requestBody.Email, key)
+			fileDb.AddAccount(account)
 		}
-		err = mail.SendMail(h.Address, h.Email, h.Password, account)
+		err = mail.SendMail(h.Address, h.Email, h.Password, &account)
 		if err != nil {
 			response.Json(w, err.Error(), 402)
 			return
@@ -68,18 +68,20 @@ func (h *EmailHandler) Verify() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		key := r.PathValue("hash")
 		payload := &VerifyResponse{
-			Verified: false,
-			Message: "Fail",
+			Verified: true,
+			Message: "Success",
 		}
-		status := 404
-		fileDb := vault.NewVault(files.NewJsonDb("../emails.json"))
-		acc := fileDb.GetAccountByKey(key)
-		if acc != nil {
+		status := 200
+		fileDb := vault.NewVault(files.NewJsonDb(h.Config.Urn))
+		acc, err := fileDb.GetAccountByKey(key)
+		if err != nil {
 			payload = &VerifyResponse{
-				Verified: true,
-				Message: "Success",
+				Verified: false,
+				Message: err.Error(),
 			}
-			status = 200
+			status = 404
+		} else {
+			fileDb.DeleteAccount(acc.Email)
 		}
 		response.Json(w, payload, status)
 	}

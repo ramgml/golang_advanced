@@ -12,5 +12,5 @@ func GetUserKey(email string) string {
 	h := sha1.New()
     h.Write([]byte(s))
     sha1_hash := hex.EncodeToString(h.Sum(nil))
-	return sha1_hash[:6]
+	return sha1_hash[:12]
 }
