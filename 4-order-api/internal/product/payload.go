@@ -8,6 +8,6 @@ type ProductCreateRequest struct {
 
 type ProductUpdateRequest struct {
 	Name        string   `json:"name"`
-	Description string   `json:"descritption"`
+	Description string   `json:"description"`
 	Images      []string `json:"images"`
 }

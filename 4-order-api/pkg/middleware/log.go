@@ -14,7 +14,7 @@ func Logging(next http.Handler) http.Handler {
 			ResponseWriter: w,
 			StatusCode: http.StatusOK,
 		}
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(wrapper, r)
 		log.WithFields(log.Fields{
 			"status_code": wrapper.StatusCode,
 			"method": r.Method,
