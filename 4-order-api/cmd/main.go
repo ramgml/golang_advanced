@@ -22,11 +22,13 @@ func init() {
 func main() {
 	conf := configs.LoadConfig()
 	router := http.NewServeMux()
+	dbConn := db.NewDb(conf)
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
 		Config: conf,
+		AuthService: auth.NewAuthService(auth.NewSessionRepository(dbConn)),
 	})
 	product.NewProductHandler(router, product.ProductHandlerDeps{
-		ProductRepository: product.NewProductRepository(db.NewDb(conf)),
+		ProductRepository: product.NewProductRepository(dbConn),
 	})
 	chain := middleware.Chain(
 		middleware.Logging,

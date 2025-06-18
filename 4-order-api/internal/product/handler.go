@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductHandlerDeps struct{	
+type ProductHandlerDeps struct {
 	ProductRepository *ProductRepository
 }
 
@@ -75,10 +75,10 @@ func (ph *ProductHandler) Update() func(http.ResponseWriter, *http.Request) {
 			return
 		}
 		product, err := ph.ProductRepository.Update(&Product{
-			Model: gorm.Model{ID: uint(id)},
-			Name: body.Name,
+			Model:       gorm.Model{ID: uint(id)},
+			Name:        body.Name,
 			Description: body.Description,
-			Images: body.Images,
+			Images:      body.Images,
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
