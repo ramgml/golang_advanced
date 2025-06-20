@@ -63,7 +63,7 @@ func (ah *AuthHandler) VerifyCode() func(http.ResponseWriter, *http.Request) {
 			http.Error(w, "wrong code", http.StatusUnauthorized)
 			return
 		}
-		token, err := jwt.NewJWT(ah.Config.Auth.Secret).Create(body.SessionUid)
+		token, err := jwt.NewJWT(ah.Config.Auth.Secret).Create(session.Phone)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

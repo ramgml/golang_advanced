@@ -30,6 +30,7 @@ func IsAuthed(next http.Handler, config *configs.Config) http.Handler {
 		isValid, data := jwt.NewJWT(config.Auth.Secret).Parse(token)
 		if !isValid {
 			writeUnauthed(w)
+			return
 		}
 		ctx := context.WithValue(r.Context(), ContextPhoneKey, data.Phone)
 		req := r.WithContext(ctx)
