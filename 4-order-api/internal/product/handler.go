@@ -2,6 +2,8 @@ package product
 
 import (
 	"net/http"
+	"purple/4-order-api/configs"
+	"purple/4-order-api/pkg/middleware"
 	"purple/4-order-api/pkg/request"
 	"purple/4-order-api/pkg/response"
 	"strconv"
@@ -11,6 +13,7 @@ import (
 
 type ProductHandlerDeps struct {
 	ProductRepository *ProductRepository
+	Config *configs.Config
 }
 
 type ProductHandler struct {
@@ -22,9 +25,9 @@ func NewProductHandler(router *http.ServeMux, deps ProductHandlerDeps) {
 		ProductRepository: deps.ProductRepository,
 	}
 	router.HandleFunc("GET /products/{id}", handler.GetProduct())
-	router.HandleFunc("POST /products", handler.Create())
-	router.HandleFunc("PATCH /products/{id}", handler.Update())
-	router.HandleFunc("DELETE /products/{id}", handler.Delete())
+	router.Handle("POST /products", middleware.IsAuthed(handler.Create(), deps.Config))
+	router.Handle("PATCH /products/{id}", middleware.IsAuthed(handler.Update(), deps.Config))
+	router.Handle("DELETE /products/{id}", middleware.IsAuthed(handler.Delete(), deps.Config))
 }
 
 func (ph *ProductHandler) GetProduct() func(http.ResponseWriter, *http.Request) {
@@ -43,7 +46,7 @@ func (ph *ProductHandler) GetProduct() func(http.ResponseWriter, *http.Request) 
 	}
 }
 
-func (ph *ProductHandler) Create() func(http.ResponseWriter, *http.Request) {
+func (ph *ProductHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := request.HandleBody[ProductCreateRequest](&w, r)
 		if err != nil {
@@ -63,7 +66,7 @@ func (ph *ProductHandler) Create() func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func (ph *ProductHandler) Update() func(http.ResponseWriter, *http.Request) {
+func (ph *ProductHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := request.HandleBody[ProductUpdateRequest](&w, r)
 		if err != nil {
@@ -88,7 +91,7 @@ func (ph *ProductHandler) Update() func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func (ph *ProductHandler) Delete() func(http.ResponseWriter, *http.Request) {
+func (ph *ProductHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.ParseUint(r.PathValue("id"), 10, 32)
 		if err != nil {

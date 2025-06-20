@@ -53,7 +53,6 @@ func (ah *AuthHandler) VerifyCode() func(http.ResponseWriter, *http.Request) {
 		if err != nil {
 			return
 		}
-		// Проверка кода
 		session, err := ah.SessionRepository.GetByUid(body.SessionUid)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
