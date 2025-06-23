@@ -53,13 +53,8 @@ func (ah *AuthHandler) VerifyCode() func(http.ResponseWriter, *http.Request) {
 		if err != nil {
 			return
 		}
-		session, err := ah.SessionRepository.GetByUid(body.SessionUid)
+		session, err := ah.Verify(body.SessionUid, body.Code)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
-			return
-		}
-		if session.Code != body.Code {
-			sms.SendSms(session.Code)
 			http.Error(w, "wrong code", http.StatusUnauthorized)
 			return
 		}

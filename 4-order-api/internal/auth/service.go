@@ -1,5 +1,9 @@
 package auth
 
+import (
+	"errors"
+)
+
 type AuthService struct {
 	SessionRepository SessionRepository
 }
@@ -20,5 +24,12 @@ func (s *AuthService) Auth(phone string) (*Session, error) {
 }
 
 func (s *AuthService) Verify(sessionUid string, code string) (*Session, error) {
-	return &Session{}, nil
+	session, err := s.SessionRepository.GetByUid(sessionUid)
+	if err != nil {
+		return nil, err
+	}
+	if session.Code != code {
+		return nil, errors.New("wrong code")
+	}
+	return session, nil
 }
