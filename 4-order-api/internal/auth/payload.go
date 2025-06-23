@@ -5,15 +5,14 @@ type AuthByPhoneRequest struct {
 }
 
 type AuthByPhoneResponse struct {
-	Message string `json:"message"`
+	SessionUid string `json:"sessionUid"`
 }
 
 type VerifyCodeRequest struct {
-	Phone string `json:"phone" validate:"required"`
-	Code  string `json:"code" validate:"required"`
+	SessionUid string `json:"sessionUid" validate:"required"`
+	Code       string `json:"code" validate:"required"`
 }
 
 type VerifyCodeResponse struct {
-	IsVerified bool   `json:"isVerified"`
-	Message    string `json:"message"`
+	Token string `json:"token"`
 }

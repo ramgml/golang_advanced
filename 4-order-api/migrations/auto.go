@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"purple/4-order-api/internal/auth"
+	"purple/4-order-api/internal/cart"
 	"purple/4-order-api/internal/product"
 
 	"github.com/joho/godotenv"
@@ -19,5 +21,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&product.Product{})
+	db.AutoMigrate(
+		&product.Product{},
+		&auth.Session{},
+		&cart.Cart{},
+	)
 }

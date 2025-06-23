@@ -43,5 +43,5 @@ func (repo *ProductRepository) Update(product *Product) (*Product, error) {
 
 func (repo *ProductRepository) Delete(id uint) error {
 	result := repo.conn.DB.Delete(&Product{}, id)
-	return result.Error	
+	return result.Error
 }
