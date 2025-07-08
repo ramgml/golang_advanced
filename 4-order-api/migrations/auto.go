@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"purple/4-order-api/internal/auth"
-	"purple/4-order-api/internal/cart"
 	"purple/4-order-api/internal/order"
 	"purple/4-order-api/internal/product"
 	"purple/4-order-api/internal/user"
@@ -26,16 +25,12 @@ func main() {
 	db.AutoMigrate(
 		&product.Product{},
 		&auth.Session{},
-		&cart.Cart{},
-		&cart.CartItem{},
 		&user.User{},
 		&order.Order{},
 	)
 	DropUnusedColumns(
 		db,
 		&user.User{},
-		&cart.Cart{},
-		&cart.CartItem{},
     )
 }
 

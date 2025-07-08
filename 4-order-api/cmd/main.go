@@ -8,7 +8,6 @@ import (
 
 	"purple/4-order-api/configs"
 	"purple/4-order-api/internal/auth"
-	"purple/4-order-api/internal/cart"
 	"purple/4-order-api/internal/order"
 	"purple/4-order-api/internal/product"
 	"purple/4-order-api/internal/user"
@@ -30,13 +29,7 @@ func main() {
 	sessionRepo := auth.NewSessionRepository(dbConn)
 	userRepo := user.NewUserRepositry(dbConn)
 	productRepo := product.NewProductRepository(dbConn)
-	cartRepo := cart.NewCartRespository(dbConn)
 	orderRepo := order.NewOrderRepository(dbConn)
-	// service
-	cartService := cart.NewCartService(&cart.CartServiceDeps{
-		UserRepository: userRepo,
-		CartRepository: cartRepo,
-	})
 	// handler
 	auth.NewAuthHandler(router, &auth.AuthHandlerDeps{
 		Config: conf,
@@ -48,10 +41,6 @@ func main() {
 	product.NewProductHandler(router, &product.ProductHandlerDeps{
 		ProductRepository: productRepo,
 		Config:            conf,
-	})
-	cart.NewCartHandler(router, &cart.CartHandlerDeps{
-		CartService: cartService,
-		Config:      conf,
 	})
 	order.NewOrderHandler(router, &order.OrderHandlerDeps{
 		OrderRepository: orderRepo,
