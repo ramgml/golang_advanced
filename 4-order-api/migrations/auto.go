@@ -4,7 +4,9 @@ import (
 	"os"
 	"purple/4-order-api/internal/auth"
 	"purple/4-order-api/internal/cart"
+	"purple/4-order-api/internal/order"
 	"purple/4-order-api/internal/product"
+	"purple/4-order-api/internal/user"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -25,5 +27,36 @@ func main() {
 		&product.Product{},
 		&auth.Session{},
 		&cart.Cart{},
+		&cart.CartItem{},
+		&user.User{},
+		&order.Order{},
 	)
+	DropUnusedColumns(
+		db,
+		&user.User{},
+		&cart.Cart{},
+		&cart.CartItem{},
+    )
+}
+
+func DropUnusedColumns(DB *gorm.DB, dsts ...any) {
+	for _, dst := range dsts {
+		stmt := &gorm.Statement{DB: DB}
+		stmt.Parse(dst)
+		fields := stmt.Schema.Fields
+		columns, _ := DB.Debug().Migrator().ColumnTypes(dst)
+
+		for i := range columns {
+			found := false
+			for j := range fields {
+				if columns[i].Name() == fields[j].DBName {
+					found = true
+					break
+				}
+			}
+			if !found {
+				DB.Migrator().DropColumn(dst, columns[i].Name())
+			}
+		}
+	} 
 }
