@@ -19,7 +19,7 @@ type AuthHandler struct {
 	*AuthService
 }
 
-func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
+func NewAuthHandler(router *http.ServeMux, deps *AuthHandlerDeps) {
 	handler := &AuthHandler{
 		Config:      deps.Config,
 		AuthService: deps.AuthService,
@@ -53,12 +53,12 @@ func (ah *AuthHandler) VerifyCode() func(http.ResponseWriter, *http.Request) {
 		if err != nil {
 			return
 		}
-		session, err := ah.Verify(body.SessionUid, body.Code)
+		phone, err := ah.AuthService.Verify(body.SessionUid, body.Code)
 		if err != nil {
 			http.Error(w, "wrong code", http.StatusUnauthorized)
 			return
 		}
-		token, err := jwt.NewJWT(ah.Config.Auth.Secret).Create(session.Phone)
+		token, err := jwt.NewJWT(ah.Config.Auth.Secret).Create(phone)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

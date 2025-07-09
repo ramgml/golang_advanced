@@ -20,7 +20,7 @@ type ProductHandler struct {
 	ProductRepository *ProductRepository
 }
 
-func NewProductHandler(router *http.ServeMux, deps ProductHandlerDeps) {
+func NewProductHandler(router *http.ServeMux, deps *ProductHandlerDeps) {
 	handler := &ProductHandler{
 		ProductRepository: deps.ProductRepository,
 	}

@@ -45,3 +45,12 @@ func (repo *ProductRepository) Delete(id uint) error {
 	result := repo.conn.DB.Delete(&Product{}, id)
 	return result.Error
 }
+
+func (repo *ProductRepository) GetByIds(ids []uint) ([]Product, error) {
+	var products []Product
+	result := repo.conn.DB.Find(&products, ids)
+	if result.Error != nil {
+		return nil, result.Error 
+	}
+	return products, nil
+}
