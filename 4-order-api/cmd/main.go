@@ -21,7 +21,7 @@ func init() {
 	log.SetLevel(log.DebugLevel)
 }
 
-func main() {
+func App() http.Handler {
 	conf := configs.LoadConfig()
 	router := http.NewServeMux()
 	dbConn := db.NewDb(conf)
@@ -52,9 +52,13 @@ func main() {
 	chain := middleware.Chain(
 		middleware.Logging,
 	)
+	return chain(router)
+}
+
+func main() {
 	server := http.Server{
 		Addr:    ":8081",
-		Handler: chain(router),
+		Handler: App(),
 	}
 	log.WithFields(log.Fields{
 		"status": "work",
